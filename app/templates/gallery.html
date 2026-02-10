@@ -1,28 +1,37 @@
 {% extends "base.html" %}
 {% block title %}Gallery | {{ salon.name }}{% endblock %}
+
 {% block content %}
-<div class="kicker">Gallery</div>
-<h2 class="h2">Our Work</h2>
-<p class="p">Latest posts from Instagram.</p>
+<div class="gallery-head">
+    <div>
+    <div class="kicker">Gallery</div>
+    <h2 class="h2">Our Work</h2>
+    <p class="p">Tap any image to view larger — updated from Instagram.</p>
+    </div>
+    <a class="btn btn--outline" href="{{ salon.instagram }}" target="_blank">Open Instagram</a>
+    </div>
 
 {% if posts and posts|length > 0 %}
-<div class="gallery">
+<div class="gallery-grid">
     {% for p in posts %}
-      <a class="tile" href="{{ p.permalink }}" target="_blank" rel="noopener">
-        {% if p.media_type == "VIDEO" and p.thumbnail_url %}
-        <img src="{{ p.thumbnail_url }}" alt="Instagram post" loading="lazy">
-        {% elif p.media_url %}
-        <img src="{{ p.media_url }}" alt="Instagram post" loading="lazy">
-        {% else %}
-        <img src="/static/img/hero.jpg" alt="Instagram post" loading="lazy">
-        {% endif %}
+    {% set img = p.thumbnail_url if p.media_type == "VIDEO" and p.thumbnail_url else p.media_url %}
+    <a class="g-item" href="{{ p.permalink }}" target="_blank" rel="noopener" data-lightbox="{{ img }}">
+        <img src="{{ img }}" alt="Gallery image" loading="lazy">
+        <div class="g-overlay">View</div>
       </a>
     {% endfor %}
   </div>
 {% else %}
-  <div class="card">
+<div class="card" style="margin-top:14px">
     <h3>No posts synced yet</h3>
-    <p class="p">Admin can run: <code>POST /api/instagram/sync</code> after adding IG token.</p>
+    <p class="p">After adding IG token, admin runs: <code>POST /api/instagram/sync</code></p>
   </div>
 {% endif %}
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+    <div class="lightbox__card">
+        <button class="lb-close" id="lbClose">✕</button>
+        <img id="lightboxImg" alt="Preview">
+    </div>
+</div>
 {% endblock %}

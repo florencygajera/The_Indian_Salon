@@ -28,7 +28,11 @@ def about(request: Request):
 
 @router.get("/services", response_class=HTMLResponse)
 def services(request: Request):
-    return templates.TemplateResponse("services.html", {"request": request, "salon": SALON})
+    return templates.TemplateResponse(
+        "services.html",
+        {"request": request, "salon": SALON, "active": "services"}
+    )
+
 
 @router.get("/gallery", response_class=HTMLResponse)
 def gallery(request: Request):
@@ -36,7 +40,8 @@ def gallery(request: Request):
 
 @router.get("/booking", response_class=HTMLResponse)
 def booking(request: Request):
-    return templates.TemplateResponse("booking.html", {"request": request, "salon": SALON})
+    return templates.TemplateResponse("booking.html", {"request": request, "salon": SALON, "active": "booking"})
+
 
 @router.get("/contact", response_class=HTMLResponse)
 def contact(request: Request):
@@ -46,3 +51,60 @@ def contact(request: Request):
 def gallery(request: Request, db: Session = Depends(get_db)):
     posts = InstagramService.get_gallery(db)
     return templates.TemplateResponse("gallery.html", {"request": request, "salon": SALON, "posts": posts})
+
+@router.get("/skin_service", response_class=HTMLResponse)
+def skin_service(request: Request):
+    page = {
+        "kicker": "Skin Care",
+        "title": "Skin Services",
+        "subtitle": "Facials, cleanups, detan & glow treatments for fresh, healthy skin.",
+        "includes": [
+            {"title": "Face Cleanup", "desc": "Deep cleanse, remove tan & impurities."},
+            {"title": "Facial Treatments", "desc": "Hydration, glow and skin repair options."},
+            {"title": "D-Tan & Bleach", "desc": "Brightening & even tone finishing."},
+        ],
+        "packages": [
+            {"name": "Quick Glow", "desc": "Cleanup + mild detan", "price": "499+"},
+            {"name": "Signature Facial", "desc": "Facial + massage + finishing", "price": "999+"},
+            {"name": "Premium Glow", "desc": "Advanced facial + detan", "price": "1499+"},
+        ],
+    }
+    return templates.TemplateResponse("service_detail.html", {"request": request, "salon": SALON, "active": "services", "page": page})
+
+@router.get("/hair-treatment", response_class=HTMLResponse)
+def hair_treatment(request: Request):
+    page = {
+        "kicker": "Hair",
+        "title": "Hair Treatments",
+        "subtitle": "Haircut, styling, spa, smoothening and premium hair care.",
+        "includes": [
+            {"title": "Haircut & Styling", "desc": "Casual & event looks."},
+            {"title": "Color & Highlights", "desc": "Natural to bold transformations."},
+            {"title": "Hair Spa", "desc": "Repair, smoothness and shine."},
+        ],
+        "packages": [
+            {"name": "Haircut + Wash", "desc": "Clean finish + styling", "price": "299+"},
+            {"name": "Hair Spa", "desc": "Nourish + repair treatment", "price": "799+"},
+            {"name": "Color Package", "desc": "Color + care + finishing", "price": "1499+"},
+        ],
+    }
+    return templates.TemplateResponse("service_detail.html", {"request": request, "salon": SALON, "active": "services", "page": page})
+
+@router.get("/bridal-makeup", response_class=HTMLResponse)
+def bridal_makeup(request: Request):
+    page = {
+        "kicker": "Makeup",
+        "title": "Bridal Makeup",
+        "subtitle": "Bridal and occasion looks with premium finish and photo-ready results.",
+        "includes": [
+            {"title": "Bridal Look", "desc": "Full makeup with long-lasting finish."},
+            {"title": "Hairstyle", "desc": "Bridal hair styling as per outfit/face."},
+            {"title": "Touch-up", "desc": "Final finishing for a perfect look."},
+        ],
+        "packages": [
+            {"name": "Engagement Makeup", "desc": "Soft glam + hairstyle", "price": "2999+"},
+            {"name": "Bridal Makeup", "desc": "Premium bridal look", "price": "6999+"},
+            {"name": "Bridal Combo", "desc": "Makeup + hair + draping", "price": "9999+"},
+        ],
+    }
+    return templates.TemplateResponse("service_detail.html", {"request": request, "salon": SALON, "active": "services", "page": page})

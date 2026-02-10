@@ -1,15 +1,251 @@
 {% extends "base.html" %}
+{% block title %}Book Appointment | {{ salon.name }}{% endblock %}
+
 {% block content %}
-<h1>Book Appointment</h1>
-
-<div class="card">
-  <p>Use API endpoints from frontend JS:</p>
-  <pre>
-GET  /api/services
-GET  /api/bookings/slots?date=YYYY-MM-DD&service_id=1&staff_id=1
-POST /api/bookings  (JSON body)
-  </pre>
-
-  <p>We can build a full interactive booking UI next.</p>
+<div class="hero-mini">
+    <div class="kicker">Booking</div>
+    <h2 class="h2">Book an Appointment</h2>
+    <p class="p">Select service → choose date → pick a slot → confirm.</p>
 </div>
+
+<div class="split">
+    <!-- Form -->
+<div class="card">
+    <h3>Your Details</h3>
+
+    <div class="form-grid">
+        <div>
+            <label class="lbl">Full Name</label>
+            <input class="inp" id="name" placeholder="Enter your name" />
+        </div>
+    <div>
+        <label class="lbl">Phone</label>
+        <input class="inp" id="phone" placeholder="e.g. 9876543210" />
+    </div>
+    <div>
+        <label class="lbl">Email (optional)</label>
+        <input class="inp" id="email" placeholder="you@gmail.com" />
+    </div>
+    
+    <div>
+        <label class="lbl">Service</label>
+        <select class="inp" id="service"></select>
+    </div>
+    
+    <div>
+        <label class="lbl">Date</label>
+        <input class="inp" id="date" type="date" />
+    </div>
+    
+    <div>
+        <label class="lbl">Notes (optional)</label>
+        <input class="inp" id="notes" placeholder="Any preference..." />
+    </div>
+    </div>
+    
+    <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap">
+        <button class="btn btn--primary" id="loadSlotsBtn" type="button">Load Slots</button>
+        <button class="btn btn--outline" id="clearBtn" type="button">Clear</button>
+    </div>
+    
+    <div id="msg" class="msg" style="display:none"></div>
+    </div>
+    
+    <!-- Slots -->
+    <div class="card">
+        <h3>Available Slots</h3>
+        <p class="p" style="margin-top:6px">Tap a slot to select it.</p>
+    
+        <div id="slots" class="slots"></div>
+    
+        <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap">
+            <button class="btn btn--dark" id="confirmBtn" type="button" disabled>Confirm Booking</button>
+            <a class="btn btn--outline" target="_blank"
+                href="https://wa.me/{{ salon.phone | replace('+','') | replace(' ','') }}">WhatsApp</a>
+        </div>
+    </div>
+    </div>
+    
+    <div class="section">
+        <div class="card">
+            <h3>Need help?</h3>
+            <p class="p">Call us at <b>{{ salon.phone }}</b> or WhatsApp for quick booking.</p>
+        </div>
+    </div>
+    
+    <script>
+        const el = (id) => document.getElementById(id);
+
+        const msgBox = el("msg");
+        const slotsWrap = el("slots");
+        const confirmBtn = el("confirmBtn");
+
+        let selectedSlot = null; // {starts_at, ends_at}
+        let servicesCache = [];
+
+        function showMsg(text, type = "info") {
+            msgBox.style.display = "block";
+            msgBox.className = "msg " + type;
+            msgBox.textContent = text;
+        }
+
+        function clearMsg() {
+            msgBox.style.display = "none";
+            msgBox.textContent = "";
+        }
+
+        function setTodayDefault() {
+            const d = new Date();
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, "0");
+            const dd = String(d.getDate()).padStart(2, "0");
+            el("date").value = `${yyyy}-${mm}-${dd}`;
+            el("date").min = `${yyyy}-${mm}-${dd}`;
+        }
+
+        async function loadServices() {
+            const r = await fetch("/api/services");
+            const data = await r.json();
+            servicesCache = Array.isArray(data) ? data : [];
+
+            const s = el("service");
+            s.innerHTML = "";
+            if (!servicesCache.length) {
+                const opt = document.createElement("option");
+                opt.value = "";
+                opt.textContent = "No services found (add via API/admin)";
+                s.appendChild(opt);
+                return;
+            }
+
+            const opt0 = document.createElement("option");
+            opt0.value = "";
+            opt0.textContent = "Select a service";
+            s.appendChild(opt0);
+
+            servicesCache.forEach((x) => {
+                const opt = document.createElement("option");
+                opt.value = x.id;
+                opt.textContent = `${x.category} • ${x.name} (${x.duration_minutes} min)`;
+                s.appendChild(opt);
+            });
+        }
+
+        function renderSlots(slots) {
+            selectedSlot = null;
+            confirmBtn.disabled = true;
+            slotsWrap.innerHTML = "";
+
+            if (!slots || !slots.length) {
+                slotsWrap.innerHTML = `<div class="muted">No slots available for selected date/service.</div>`;
+                return;
+            }
+
+            slots.forEach((s, i) => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "slot";
+                btn.textContent = new Date(s.starts_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) +
+                    " - " +
+                    new Date(s.ends_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+                btn.addEventListener("click", () => {
+                    document.querySelectorAll(".slot").forEach(x => x.classList.remove("slot--active"));
+                    btn.classList.add("slot--active");
+                    selectedSlot = s;
+                    confirmBtn.disabled = false;
+                    clearMsg();
+                });
+
+                slotsWrap.appendChild(btn);
+            });
+        }
+
+        async function loadSlots() {
+            clearMsg();
+            const serviceId = el("service").value;
+            const date = el("date").value;
+
+            if (!serviceId) return showMsg("Please select a service.", "warn");
+            if (!date) return showMsg("Please select a date.", "warn");
+
+            showMsg("Loading slots...", "info");
+            selectedSlot = null;
+            confirmBtn.disabled = true;
+
+            const url = `/api/bookings/slots?date=${encodeURIComponent(date)}&service_id=${encodeURIComponent(serviceId)}`;
+            const r = await fetch(url);
+            const data = await r.json();
+
+            clearMsg();
+            renderSlots(data);
+        }
+
+        async function confirmBooking() {
+            clearMsg();
+            const name = el("name").value.trim();
+            const phone = el("phone").value.trim();
+            const email = el("email").value.trim();
+            const notes = el("notes").value.trim();
+            const serviceId = el("service").value;
+
+            if (!name) return showMsg("Please enter your name.", "warn");
+            if (!phone) return showMsg("Please enter your phone number.", "warn");
+            if (!serviceId) return showMsg("Please select a service.", "warn");
+            if (!selectedSlot) return showMsg("Please select a slot.", "warn");
+
+            const payload = {
+                customer_name: name,
+                customer_phone: phone,
+                customer_email: email ? email : null,
+                service_id: Number(serviceId),
+                staff_id: null,
+                starts_at: selectedSlot.starts_at,
+                ends_at: selectedSlot.ends_at,
+                notes: notes ? notes : null
+            };
+
+            showMsg("Creating booking...", "info");
+
+            const r = await fetch("/api/bookings/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await r.json();
+
+            if (!r.ok) {
+                const detail = data?.detail || "Booking failed.";
+                return showMsg(detail, "err");
+            }
+
+            showMsg("✅ Booking received! We will confirm shortly.", "ok");
+            confirmBtn.disabled = true;
+
+            // optional: clear selection
+            document.querySelectorAll(".slot").forEach(x => x.classList.remove("slot--active"));
+        }
+
+        function clearAll() {
+            el("name").value = "";
+            el("phone").value = "";
+            el("email").value = "";
+            el("notes").value = "";
+            el("service").value = "";
+            slotsWrap.innerHTML = "";
+            selectedSlot = null;
+            confirmBtn.disabled = true;
+            clearMsg();
+            setTodayDefault();
+        }
+
+        el("loadSlotsBtn").addEventListener("click", loadSlots);
+        el("confirmBtn").addEventListener("click", confirmBooking);
+        el("clearBtn").addEventListener("click", clearAll);
+
+        // init
+        setTodayDefault();
+        loadServices();
+    </script>
 {% endblock %}

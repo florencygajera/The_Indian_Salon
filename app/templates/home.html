@@ -3,67 +3,125 @@
 
 {% block hero %}
 <section class="hero">
-    <div class="wrap hero__grid">
-        <div class="hero__card">
-            <div class="kicker">Premium Beauty Salon</div>
-            <h1 class="hero__title">{{ salon.name }}</h1>
-            <p class="hero__sub">
-                Hair • Grooming • Skin • Nails • Makeup — in a clean, relaxing ambience.
-            </p>
+<div class="wrap">
+    <div class="slider">
 
-            <div class="hero__cta">
+        <!-- SLIDE 1 -->
+        <div class="slide is-active" data-slide>
+            <div class="slide__grid">
+                <div class="slide__copy">
+            <div class="kicker">Premium Beauty Salon</div>
+            <div class="slide__title">Look Beautiful. Feel Beautiful.</div>
+            <p class="slide__sub">
+                Hair • Skin • Grooming • Nails • Makeup — hygienic & professional service in Nikol, Ahmedabad.
+            </p>
+            <div class="slide__cta">
                 <a class="btn btn--primary" href="/booking">Book Appointment</a>
                 <a class="btn btn--outline" href="/services">Explore Services</a>
                 <a class="btn btn--dark" target="_blank"
-                    href="https://wa.me/{{ salon.phone | replace('+','') | replace(' ','') }}">
-                    WhatsApp Now
-                </a>
+                 href="https://wa.me/{{ salon.phone | replace('+','') | replace(' ','') }}">WhatsApp</a>
             </div>
 
             <div class="badges">
-                <span class="badge">⭐ 4.8 Rating</span>
-                <span class="badge">Hygienic & Professional</span>
-                <span class="badge">Nikol, Ahmedabad</span>
+            <span class="badge">⭐ 4.8 Rating</span>
+            <span class="badge">Clean & Hygienic</span>
+            <span class="badge">Fast Support</span>
             </div>
         </div>
 
-        <div class="hero__side">
-            <div class="hero__overlay"></div>
-            <div class="hero__sideText">
+        <div class="slide__img" style="background-image:url('/static/img/slide1.jpg')">
+            <div class="slide__badge">
                 <div style="font-weight:900">Call: {{ salon.phone }}</div>
-                <div class="muted">{{ salon.address }}</div>
+            <div class="muted">{{ salon.hours }}</div>
             </div>
-        </div>
-    </div>
+            </div>
+            </div>
+            </div>
+            
+            <!-- SLIDE 2 -->
+            <div class="slide" data-slide>
+                <div class="slide__grid">
+                    <div class="slide__copy">
+                        <div class="kicker">Skin & Glow</div>
+                        <div class="slide__title">Facials • Cleanups • D-Tan</div>
+                        <p class="slide__sub">
+                            Get a fresh glow with our skin treatments and premium care.
+                        </p>
+                        <div class="slide__cta">
+                            <a class="btn btn--primary" href="/skin_service">View Skin Services</a>
+                            <a class="btn btn--outline" href="/booking">Book Now</a>
+                        </div>
+                    </div>
+            
+                    <div class="slide__img" style="background-image:url('/static/img/slide2.jpg')">
+                        <div class="slide__badge">
+                            <div style="font-weight:900">Skin Packages</div>
+                            <div class="muted">Glow • Clean • Refresh</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SLIDE 3 -->
+            <div class="slide" data-slide>
+                <div class="slide__grid">
+                    <div class="slide__copy">
+                        <div class="kicker">Bridal & Party</div>
+                        <div class="slide__title">Makeup that fits your moment</div>
+                        <p class="slide__sub">
+                            Bridal packages, party looks, glam makeovers — photo-ready finish.
+                        </p>
+                        <div class="slide__cta">
+                            <a class="btn btn--primary" href="/bridal-makeup">Bridal Makeup</a>
+                            <a class="btn btn--outline" href="/booking">Book Now</a>
+                        </div>
+                    </div>
+            
+                    <div class="slide__img" style="background-image:url('/static/img/slide3.jpg')">
+                        <div class="slide__badge">
+                            <div style="font-weight:900">Special Events</div>
+                            <div class="muted">Bridal • Party • Glam</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dots" aria-hidden="true">
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+            </div>
+            </div>
 </section>
 {% endblock %}
 
 {% block content %}
 <section class="section">
-    <div class="kicker">Our Specials</div>
-    <div class="grid">
-        <div class="card">
-    <h3>Hair Styling</h3>
-    <p>Cut, color, highlights, spa & treatments with premium products.</p>
-    <a class="link" href="/services">View →</a>
+<div class="kicker">Top Services</div>
+<h2 class="h2">Popular Categories</h2>
+
+<div class="grid">
+    <div class="card">
+    <h3>Skin Services</h3>
+    <p>Cleanup, facial, detan, bleach and glow packages.</p>
+    <a class="link" href="/skin_service">View →</a>
     </div>
     <div class="card">
-        <h3>Skin & Facials</h3>
-        <p>Cleanup, detan, facials, bleach — glow-focused care.</p>
-        <a class="link" href="/services">View →</a>
+    <h3>Hair Treatments</h3>
+    <p>Haircut, styling, color, highlights, spa & smoothening.</p>
+    <a class="link" href="/hair-treatment">View →</a>
     </div>
     <div class="card">
-        <h3>Bridal & Party Makeup</h3>
-        <p>Occasion looks, bridal packages, events & makeovers.</p>
-        <a class="link" href="/services">View →</a>
+    <h3>Bridal Makeup</h3>
+    <p>Bridal & occasion looks with premium finish.</p>
+    <a class="link" href="/bridal-makeup">View →</a>
     </div>
-    </div>
+</div>
 </section>
 
 <section class="section">
-    <div class="kicker">Instagram</div>
-    <h2 class="h2">Latest Gallery</h2>
-    <p class="p">See our work and transformations.</p>
-    <a class="btn btn--outline" href="/gallery">Open Gallery</a>
+<div class="kicker">Gallery</div>
+<h2 class="h2">Latest Work</h2>
+<p class="p">See our latest transformations and styles.</p>
+<a class="btn btn--outline" href="/gallery">Open Gallery</a>
 </section>
 {% endblock %}

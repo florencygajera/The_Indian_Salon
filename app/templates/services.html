@@ -1,30 +1,54 @@
 {% extends "base.html" %}
 {% block title %}Services | {{ salon.name }}{% endblock %}
+
 {% block content %}
+<div class="hero-mini">
 <div class="kicker">Services</div>
 <h2 class="h2">What We Offer</h2>
-<p class="p">Choose a category and book instantly.</p>
+<p class="p">Choose a category to view details and packages.</p>
 
+<div class="hero__cta">
+    <a class="btn btn--primary" href="/booking">Book Now</a>
+    <a class="btn btn--outline" target="_blank"
+        href="https://wa.me/{{ salon.phone | replace('+','') | replace(' ','') }}">WhatsApp</a>
+</div>
+</div>
+
+<div class="section">
 <div class="grid">
     <div class="card">
-        <h3>Hair Services</h3>
-        <p>Cut, color, highlights, straightening, spa.</p><a class="link" href="/booking">Book →</a>
+    <h3>Skin Services</h3>
+    <p class="p">Facials, cleanup, detan, bleach and glow treatments.</p>
+    <a class="link" href="/skin_service">View Details →</a>
     </div>
+
     <div class="card">
-        <h3>Beauty & Grooming</h3>
-        <p>Beard, waxing, threading, head massage.</p><a class="link" href="/booking">Book →</a>
+    <h3>Hair Treatments</h3>
+    <p class="p">Haircut, styling, spa, color, smoothening and care.</p>
+    <a class="link" href="/hair-treatment">View Details →</a>
     </div>
+
     <div class="card">
-        <h3>Skin & Nails</h3>
-        <p>Facials, cleanup, detan, manicure, pedicure.</p><a class="link" href="/booking">Book →</a>
+    <h3>Bridal Makeup</h3>
+    <p class="p">Bridal & party looks with premium, long-lasting finish.</p>
+    <a class="link" href="/bridal-makeup">View Details →</a>
+    </div>
     </div>
 </div>
 
-<hr class="hr">
-
-<div class="card">
-    <h3>Want full service pages like that website?</h3>
-    <p>We can create separate pages: <b>/hair</b>, <b>/skin</b>, <b>/makeup</b>, <b>/nails</b> (SEO friendly) exactly
-        like they do.</p>
+<div class="section">
+    <div class="kicker">Why Us</div>
+    <div class="split">
+        <div class="card">
+    <h3>Hygiene + Professional Staff</h3>
+    <p class="p">✅ Clean tools • ✅ Friendly staff • ✅ Premium products • ✅ Great results</p>
+    </div>
+    <div class="card">
+        <h3>Quick Info</h3>
+        <p class="p"><b>Location:</b> {{ salon.address }}</p>
+        <p class="p"><b>Hours:</b> {{ salon.hours }}</p>
+        <p class="p"><b>Call:</b> {{ salon.phone }}</p>
+    </div>
+    </div>
 </div>
 {% endblock %}
