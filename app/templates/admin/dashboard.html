@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body class="container">
+  <h1>Admin Dashboard</h1>
+
+  <h2>Recent Bookings</h2>
+  <div class="card">
+    {% for b in bookings %}
+      <div class="row">
+        <b>#{{ b.id }}</b> {{ b.customer_name }} | {{ b.customer_phone }} |
+        {{ b.starts_at }} - {{ b.ends_at }} | status: {{ b.status }}
+      </div>
+    {% else %}
+      <p>No bookings yet.</p>
+    {% endfor %}
+  </div>
+
+  <h2>Services</h2>
+  <div class="card">
+    {% for s in services %}
+      <div class="row">#{{ s.id }} {{ s.category }} - {{ s.name }} ({{ s.duration_minutes }}m)</div>
+    {% else %}
+      <p>No services yet.</p>
+    {% endfor %}
+  </div>
+</body>
+</html>

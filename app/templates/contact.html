@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Contact</h1>
+<p><b>Phone:</b> {{ salon.phone }}</p>
+<p><b>Address:</b> {{ salon.address }}</p>
+<p><a class="btn" href="https://wa.me/{{ salon.phone | replace('+','') | replace(' ','') }}" target="_blank">WhatsApp</a></p>
+{% endblock %}

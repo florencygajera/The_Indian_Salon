@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Welcome to {{ salon.name }}</h1>
+<p>Top-rated salon in Nikol, Ahmedabad.</p>
+
+<div class="card">
+  <h3>Quick Booking</h3>
+  <p><a class="btn" href="/booking">Book an Appointment</a></p>
+  <p><a href="{{ salon.instagram }}" target="_blank">Instagram</a></p>
+</div>
+{% endblock %}
