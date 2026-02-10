@@ -1,7 +1,29 @@
 {% extends "base.html" %}
+{% block title %}Contact | {{ salon.name }}{% endblock %}
 {% block content %}
-<h1>Contact</h1>
-<p><b>Phone:</b> {{ salon.phone }}</p>
-<p><b>Address:</b> {{ salon.address }}</p>
-<p><a class="btn" href="https://wa.me/{{ salon.phone | replace('+','') | replace(' ','') }}" target="_blank">WhatsApp</a></p>
+<div class="kicker">Contact</div>
+<h2 class="h2">Visit Us</h2>
+<p class="p">Call or WhatsApp for quick booking.</p>
+
+<div class="grid">
+    <div class="card">
+        <h3>Phone</h3>
+        <p><a href="tel:{{ salon.phone }}">{{ salon.phone }}</a></p>
+        <a class="btn btn--primary" target="_blank"
+            href="https://wa.me/{{ salon.phone | replace('+','') | replace(' ','') }}">WhatsApp</a>
+    </div>
+
+    <div class="card">
+        <h3>Address</h3>
+        <p class="p">{{ salon.address }}</p>
+        <a class="btn btn--outline" target="_blank"
+            href="https://www.google.com/maps/search/?api=1&query={{ salon.address | urlencode }}">Open in Maps</a>
+    </div>
+
+    <div class="card">
+        <h3>Instagram</h3>
+        <p class="p">See latest work & offers.</p>
+        <a class="btn btn--dark" href="{{ salon.instagram }}" target="_blank">Open Instagram</a>
+    </div>
+</div>
 {% endblock %}

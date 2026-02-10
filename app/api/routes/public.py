@@ -19,7 +19,8 @@ SALON = {
 
 @router.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    return templates.TemplateResponse("home.html", {"request": request, "salon": SALON})
+    return templates.TemplateResponse("home.html", {"request": request, "salon": SALON, "active": "home"})
+
 
 @router.get("/about", response_class=HTMLResponse)
 def about(request: Request):

@@ -1,31 +1,80 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{ salon.name if salon else "THE INDIAN SALON" }}</title>
-  <link rel="stylesheet" href="/static/css/style.css" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{% block title %}{{ salon.name }}{% endblock %}</title>
+<meta name="description" content="{% block desc %}Premium salon services in Nikol, Ahmedabad{% endblock %}">
+<link rel="stylesheet" href="/static/css/theme.css" />
 </head>
 <body>
-  <header class="nav">
-    <div class="brand">{{ salon.name }}</div>
-    <nav>
-      <a href="/">Home</a>
-      <a href="/about">About</a>
-      <a href="/services">Services</a>
-      <a href="/gallery">Gallery</a>
-      <a href="/booking">Book</a>
-      <a href="/contact">Contact</a>
+<header class="header">
+    <div class="wrap header__inner">
+        <a class="brand" href="/">
+            <div class="brand__logo">IS</div>
+            <div class="brand__text">
+                <div class="brand__name">{{ salon.name }}</div>
+                <div class="brand__tag">Nikol • Ahmedabad</div>
+            </div>
+        </a>
+
+        <button class="navbtn" id="navbtn" aria-label="Open menu">☰</button>
+
+        <nav class="nav" id="nav">
+            <a href="/" class="{% if active=='home' %}active{% endif %}">Home</a>
+            <a href="/about" class="{% if active=='about' %}active{% endif %}">About</a>
+            <a href="/services" class="{% if active=='services' %}active{% endif %}">Services</a>
+            <a href="/gallery" class="{% if active=='gallery' %}active{% endif %}">Gallery</a>
+            <a href="/contact" class="{% if active=='contact' %}active{% endif %}">Contact</a>
+            <a class="btn btn--primary" href="/booking">Book Now</a>
     </nav>
-  </header>
+</div>
+</header>
 
-  <main class="container">
+{% block hero %}{% endblock %}
+
+<main class="wrap main">
     {% block content %}{% endblock %}
-  </main>
+</main>
 
-  <footer class="footer">
-    <div>{{ salon.address }}</div>
-    <div>Call: {{ salon.phone }} | Hours: {{ salon.hours }}</div>
-  </footer>
+<footer class="footer">
+<div class="wrap footer__grid">
+    <div>
+        <div class="footer__brand">{{ salon.name }}</div>
+        <p class="muted">{{ salon.address }}</p>
+        <p class="muted">Hours: {{ salon.hours }}</p>
+    </div>
+
+    <div>
+        <div class="footer__title">Quick Links</div>
+        <div class="footer__links">
+            <a href="/services">Services</a>
+            <a href="/gallery">Gallery</a>
+            <a href="/booking">Book</a>
+            <a href="/contact">Contact</a>
+        </div>
+    </div>
+
+    <div>
+        <div class="footer__title">Contact</div>
+        <p><a href="tel:{{ salon.phone }}">{{ salon.phone }}</a></p>
+        <p><a href="{{ salon.instagram }}" target="_blank" rel="noopener">Instagram</a></p>
+        <div class="footer__cta">
+            <a class="btn btn--outline" target="_blank"
+                href="https://wa.me/{{ salon.phone | replace('+','') | replace(' ','') }}">WhatsApp</a>
+        </div>
+    </div>
+</div>
+
+<div class="wrap footer__bottom">
+    <span class="muted">© {{ salon.name }} — All rights reserved</span>
+</div>
+</footer>
+<a class="wa-fab" target="_blank" rel="noopener"
+    href="https://wa.me/{{ salon.phone | replace('+','') | replace(' ','') }}">
+    WhatsApp
+</a>
+
+<script src="/static/js/site.js"></script>
 </body>
 </html>

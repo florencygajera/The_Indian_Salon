@@ -1,6 +1,30 @@
 {% extends "base.html" %}
+{% block title %}Services | {{ salon.name }}{% endblock %}
 {% block content %}
-<h1>Services</h1>
-<p>Hair • Grooming • Skin • Nails • Makeup</p>
-<p>(Services list will be loaded from DB in the next UI step.)</p>
+<div class="kicker">Services</div>
+<h2 class="h2">What We Offer</h2>
+<p class="p">Choose a category and book instantly.</p>
+
+<div class="grid">
+    <div class="card">
+        <h3>Hair Services</h3>
+        <p>Cut, color, highlights, straightening, spa.</p><a class="link" href="/booking">Book →</a>
+    </div>
+    <div class="card">
+        <h3>Beauty & Grooming</h3>
+        <p>Beard, waxing, threading, head massage.</p><a class="link" href="/booking">Book →</a>
+    </div>
+    <div class="card">
+        <h3>Skin & Nails</h3>
+        <p>Facials, cleanup, detan, manicure, pedicure.</p><a class="link" href="/booking">Book →</a>
+    </div>
+</div>
+
+<hr class="hr">
+
+<div class="card">
+    <h3>Want full service pages like that website?</h3>
+    <p>We can create separate pages: <b>/hair</b>, <b>/skin</b>, <b>/makeup</b>, <b>/nails</b> (SEO friendly) exactly
+        like they do.</p>
+</div>
 {% endblock %}

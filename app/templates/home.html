@@ -1,11 +1,69 @@
 {% extends "base.html" %}
-{% block content %}
-<h1>Welcome to {{ salon.name }}</h1>
-<p>Top-rated salon in Nikol, Ahmedabad.</p>
+{% block title %}{{ salon.name }} | Nikol Ahmedabad{% endblock %}
 
-<div class="card">
-  <h3>Quick Booking</h3>
-  <p><a class="btn" href="/booking">Book an Appointment</a></p>
-  <p><a href="{{ salon.instagram }}" target="_blank">Instagram</a></p>
-</div>
+{% block hero %}
+<section class="hero">
+    <div class="wrap hero__grid">
+        <div class="hero__card">
+            <div class="kicker">Premium Beauty Salon</div>
+            <h1 class="hero__title">{{ salon.name }}</h1>
+            <p class="hero__sub">
+                Hair • Grooming • Skin • Nails • Makeup — in a clean, relaxing ambience.
+            </p>
+
+            <div class="hero__cta">
+                <a class="btn btn--primary" href="/booking">Book Appointment</a>
+                <a class="btn btn--outline" href="/services">Explore Services</a>
+                <a class="btn btn--dark" target="_blank"
+                    href="https://wa.me/{{ salon.phone | replace('+','') | replace(' ','') }}">
+                    WhatsApp Now
+                </a>
+            </div>
+
+            <div class="badges">
+                <span class="badge">⭐ 4.8 Rating</span>
+                <span class="badge">Hygienic & Professional</span>
+                <span class="badge">Nikol, Ahmedabad</span>
+            </div>
+        </div>
+
+        <div class="hero__side">
+            <div class="hero__overlay"></div>
+            <div class="hero__sideText">
+                <div style="font-weight:900">Call: {{ salon.phone }}</div>
+                <div class="muted">{{ salon.address }}</div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="kicker">Our Specials</div>
+    <div class="grid">
+        <div class="card">
+    <h3>Hair Styling</h3>
+    <p>Cut, color, highlights, spa & treatments with premium products.</p>
+    <a class="link" href="/services">View →</a>
+    </div>
+    <div class="card">
+        <h3>Skin & Facials</h3>
+        <p>Cleanup, detan, facials, bleach — glow-focused care.</p>
+        <a class="link" href="/services">View →</a>
+    </div>
+    <div class="card">
+        <h3>Bridal & Party Makeup</h3>
+        <p>Occasion looks, bridal packages, events & makeovers.</p>
+        <a class="link" href="/services">View →</a>
+    </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="kicker">Instagram</div>
+    <h2 class="h2">Latest Gallery</h2>
+    <p class="p">See our work and transformations.</p>
+    <a class="btn btn--outline" href="/gallery">Open Gallery</a>
+</section>
 {% endblock %}

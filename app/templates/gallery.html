@@ -1,32 +1,28 @@
 {% extends "base.html" %}
+{% block title %}Gallery | {{ salon.name }}{% endblock %}
 {% block content %}
-<h1>Gallery</h1>
-<p>Latest posts from our Instagram.</p>
+<div class="kicker">Gallery</div>
+<h2 class="h2">Our Work</h2>
+<p class="p">Latest posts from Instagram.</p>
 
 {% if posts and posts|length > 0 %}
-  <div class="grid">
+<div class="gallery">
     {% for p in posts %}
       <a class="tile" href="{{ p.permalink }}" target="_blank" rel="noopener">
         {% if p.media_type == "VIDEO" and p.thumbnail_url %}
-          <img src="{{ p.thumbnail_url }}" alt="Instagram post" loading="lazy" />
+        <img src="{{ p.thumbnail_url }}" alt="Instagram post" loading="lazy">
         {% elif p.media_url %}
-          <img src="{{ p.media_url }}" alt="Instagram post" loading="lazy" />
+        <img src="{{ p.media_url }}" alt="Instagram post" loading="lazy">
         {% else %}
-          <div class="fallback">Open Post</div>
+        <img src="/static/img/hero.jpg" alt="Instagram post" loading="lazy">
         {% endif %}
       </a>
     {% endfor %}
   </div>
 {% else %}
   <div class="card">
-    <p>No cached posts yet.</p>
-    <p>Admin: call <code>POST /api/instagram/sync</code> once after setting token.</p>
-    <p>Or use the quick embed method below.</p>
+    <h3>No posts synced yet</h3>
+    <p class="p">Admin can run: <code>POST /api/instagram/sync</code> after adding IG token.</p>
   </div>
 {% endif %}
-
-<div class="card">
-  <h3>Follow us</h3>
-  <a class="btn" href="{{ salon.instagram }}" target="_blank">Open Instagram</a>
-</div>
 {% endblock %}
