@@ -4,7 +4,12 @@ from sqlalchemy.orm import Session
 
 from app.db.session import SessionLocal
 from app.core.security import decode_token
-from app.repositories.user_repo import get_user_by_email
+from sqlalchemy.orm import Session
+from app.models.user import User
+
+def get_user_by_email(db: Session, email: str):
+    return db.query(User).filter(User.email == email).first()
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
