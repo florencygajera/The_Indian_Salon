@@ -56,54 +56,68 @@ def skin_service(request: Request):
     page = {
         "kicker": "Skin Care",
         "title": "Skin Services",
-        "subtitle": "Facials, cleanups, detan & glow treatments for fresh, healthy skin.",
+        "subtitle": "Professional facials, cleanups & glow treatments in Nikol.",
         "includes": [
-            {"title": "Face Cleanup", "desc": "Deep cleanse, remove tan & impurities."},
-            {"title": "Facial Treatments", "desc": "Hydration, glow and skin repair options."},
-            {"title": "D-Tan & Bleach", "desc": "Brightening & even tone finishing."},
+            {"title": "Face Cleanup", "desc": "Deep cleansing & tan removal."},
+            {"title": "Facial Treatment", "desc": "Hydrating & glow boosting facials."},
+            {"title": "D-Tan", "desc": "Instant brightness treatment."},
+            {"title": "Head Massage", "desc": "Relaxing add-on therapy."},
         ],
         "packages": [
-            {"name": "Quick Glow", "desc": "Cleanup + mild detan", "price": "499+"},
-            {"name": "Signature Facial", "desc": "Facial + massage + finishing", "price": "999+"},
-            {"name": "Premium Glow", "desc": "Advanced facial + detan", "price": "1499+"},
+            {"name": "Basic Glow", "desc": "Cleanup + Detan", "price": "499+"},
+            {"name": "Signature Facial", "desc": "Facial + Massage", "price": "999+"},
+            {"name": "Premium Treatment", "desc": "Advanced Glow Therapy", "price": "1499+"},
         ],
     }
-    return templates.TemplateResponse("service_detail.html", {"request": request, "salon": SALON, "active": "services", "page": page})
+    return templates.TemplateResponse(
+        "services.html",
+        {"request": request, "salon": SALON, "page": page}
+    )
+
 
 @router.get("/hair-treatment", response_class=HTMLResponse)
 def hair_treatment(request: Request):
     page = {
-        "kicker": "Hair",
+        "kicker": "Hair Care",
         "title": "Hair Treatments",
-        "subtitle": "Haircut, styling, spa, smoothening and premium hair care.",
+        "subtitle": "Haircut, styling, color & spa services.",
         "includes": [
-            {"title": "Haircut & Styling", "desc": "Casual & event looks."},
-            {"title": "Color & Highlights", "desc": "Natural to bold transformations."},
-            {"title": "Hair Spa", "desc": "Repair, smoothness and shine."},
+            {"title": "Haircut & Styling", "desc": "Trendy and event looks."},
+            {"title": "Hair Color", "desc": "Highlights & full color."},
+            {"title": "Hair Spa", "desc": "Deep nourishment therapy."},
+            {"title": "Smoothening", "desc": "Long-lasting sleek finish."},
         ],
         "packages": [
-            {"name": "Haircut + Wash", "desc": "Clean finish + styling", "price": "299+"},
-            {"name": "Hair Spa", "desc": "Nourish + repair treatment", "price": "799+"},
-            {"name": "Color Package", "desc": "Color + care + finishing", "price": "1499+"},
+            {"name": "Haircut + Wash", "desc": "Clean finish styling", "price": "299+"},
+            {"name": "Hair Spa", "desc": "Repair & Shine treatment", "price": "799+"},
+            {"name": "Color Package", "desc": "Color + Care", "price": "1499+"},
         ],
     }
-    return templates.TemplateResponse("service_detail.html", {"request": request, "salon": SALON, "active": "services", "page": page})
+    return templates.TemplateResponse(
+        "services.html",
+        {"request": request, "salon": SALON, "page": page}
+    )
+
 
 @router.get("/bridal-makeup", response_class=HTMLResponse)
 def bridal_makeup(request: Request):
     page = {
         "kicker": "Makeup",
         "title": "Bridal Makeup",
-        "subtitle": "Bridal and occasion looks with premium finish and photo-ready results.",
+        "subtitle": "Premium bridal & occasion makeup packages.",
         "includes": [
-            {"title": "Bridal Look", "desc": "Full makeup with long-lasting finish."},
-            {"title": "Hairstyle", "desc": "Bridal hair styling as per outfit/face."},
-            {"title": "Touch-up", "desc": "Final finishing for a perfect look."},
+            {"title": "Bridal Makeup", "desc": "Long-lasting luxury finish."},
+            {"title": "Hairstyling", "desc": "Bridal hairstyle support."},
+            {"title": "Draping", "desc": "Saree / Dupatta draping."},
+            {"title": "Touch-up Kit", "desc": "Basic touch-up support."},
         ],
         "packages": [
-            {"name": "Engagement Makeup", "desc": "Soft glam + hairstyle", "price": "2999+"},
-            {"name": "Bridal Makeup", "desc": "Premium bridal look", "price": "6999+"},
-            {"name": "Bridal Combo", "desc": "Makeup + hair + draping", "price": "9999+"},
+            {"name": "Engagement Look", "desc": "Soft glam finish", "price": "2999+"},
+            {"name": "Bridal Premium", "desc": "Full bridal package", "price": "6999+"},
+            {"name": "Bridal Combo", "desc": "Makeup + Hair + Draping", "price": "9999+"},
         ],
     }
-    return templates.TemplateResponse("service_detail.html", {"request": request, "salon": SALON, "active": "services", "page": page})
+    return templates.TemplateResponse(
+        "services.html",
+        {"request": request, "salon": SALON, "page": page}
+    )

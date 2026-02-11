@@ -28,9 +28,17 @@
     </div>
     
     <div>
-        <label class="lbl">Service</label>
-        <select class="inp" id="service"></select>
-    </div>
+<label class="lbl">Service</label>
+<div class="selectWrap">
+    <select class="inp select" id="service">
+        <option value="">Skin Services</option>
+        <option value="">Hair Treatment</option>
+        <option value="">Bridal Makeup</option>
+    </select>
+    <span class="selectArrow">▾</span>
+</div>
+</div>
+
     
     <div>
         <label class="lbl">Date</label>
@@ -51,8 +59,7 @@
     <div id="msg" class="msg" style="display:none"></div>
     </div>
     
-    <!-- Slots -->
-    <div class="card">
+    <div class="card" id="slotsCard" style="display:none;">
         <h3>Available Slots</h3>
         <p class="p" style="margin-top:6px">Tap a slot to select it.</p>
     
@@ -64,7 +71,8 @@
                 href="https://wa.me/{{ salon.phone | replace('+','') | replace(' ','') }}">WhatsApp</a>
         </div>
     </div>
-    </div>
+
+
     
     <div class="section">
         <div class="card">
@@ -75,6 +83,9 @@
     
     <script>
         const el = (id) => document.getElementById(id);
+                                    const slotsCard = el("slotsCard");
+                                    let slotPoll = null;
+                                    let lastSlotQuery = null; // {date, serviceId}
 
         const msgBox = el("msg");
         const slotsWrap = el("slots");
@@ -141,30 +152,42 @@
                 return;
             }
 
-            slots.forEach((s, i) => {
+            slots.forEach((s) => {
                 const btn = document.createElement("button");
                 btn.type = "button";
-                btn.className = "slot";
-                btn.textContent = new Date(s.starts_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) +
-                    " - " +
-                    new Date(s.ends_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-                btn.addEventListener("click", () => {
-                    document.querySelectorAll(".slot").forEach(x => x.classList.remove("slot--active"));
-                    btn.classList.add("slot--active");
-                    selectedSlot = s;
-                    confirmBtn.disabled = false;
-                    clearMsg();
-                });
+      const startTxt = new Date(s.starts_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      const endTxt = new Date(s.ends_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-                slotsWrap.appendChild(btn);
-            });
+      const remaining = (s.remaining_capacity ?? null);
+      const label = remaining === null ? "" : ` • ${remaining} left`;
+
+      btn.className = "slot" + (s.is_full ? " slot--full" : "");
+      btn.textContent = `${startTxt} - ${endTxt}${label}`;
+
+      if (s.is_full) {
+          btn.disabled = true;
+          return slotsWrap.appendChild(btn);
+      }
+
+      btn.addEventListener("click", () => {
+          document.querySelectorAll(".slot").forEach(x => x.classList.remove("slot--active"));
+          btn.classList.add("slot--active");
+          selectedSlot = s;
+          confirmBtn.disabled = false;
+          clearMsg();
+      });
+
+      slotsWrap.appendChild(btn);
+  });
         }
+
 
         async function loadSlots() {
             clearMsg();
             const serviceId = el("service").value;
             const date = el("date").value;
+            slotsCard.style.display = "block"; // show the slots section after clicking Load Slots
 
             if (!serviceId) return showMsg("Please select a service.", "warn");
             if (!date) return showMsg("Please select a date.", "warn");
@@ -177,9 +200,39 @@
             const r = await fetch(url);
             const data = await r.json();
 
+            // Start polling for real-time updates (every 8 sec)
+            lastSlotQuery = { date, serviceId };
+            if (slotPoll) clearInterval(slotPoll);
+            slotPoll = setInterval(() => {
+                if (lastSlotQuery) refreshSlots();
+            }, 8000);
+            
+
             clearMsg();
             renderSlots(data);
         }
+                async function refreshSlots() {
+                    const { date, serviceId } = lastSlotQuery || {};
+                    if (!date || !serviceId) return;
+
+                    const url = `/api/bookings/slots?date=${encodeURIComponent(date)}&service_id=${encodeURIComponent(serviceId)}`;
+                    const r = await fetch(url);
+                    const data = await r.json();
+
+                    // if selected slot became full, unselect it
+                    if (selectedSlot && Array.isArray(data)) {
+                        const stillThere = data.find(x => x.starts_at === selectedSlot.starts_at && x.ends_at === selectedSlot.ends_at);
+                        if (!stillThere || stillThere.is_full) {
+                            selectedSlot = null;
+                            confirmBtn.disabled = true;
+                            document.querySelectorAll(".slot").forEach(x => x.classList.remove("slot--active"));
+                            showMsg("Slot became unavailable. Please pick another slot.", "warn");
+                        }
+                    }
+
+                    renderSlots(data);
+                }
+
 
         async function confirmBooking() {
             clearMsg();
@@ -247,5 +300,13 @@
         // init
         setTodayDefault();
         loadServices();
+
+    el("service").addEventListener("change", () => {
+        if (el("service").value && el("date").value) loadSlots();
+    });
+    el("date").addEventListener("change", () => {
+        if (el("service").value && el("date").value) loadSlots();
+    });
+
     </script>
 {% endblock %}

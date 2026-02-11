@@ -2,7 +2,26 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from app.models.booking import Booking, BookingStatus
 
+
 class BookingService:
+    @staticmethod
+    def check_slot_availability(db: Session, service_id: int, starts_at, max_per_slot: int = 1):
+        """Check if a slot is available for booking."""
+        booked = db.query(Booking).filter(
+            Booking.service_id == service_id,
+            Booking.starts_at == starts_at,
+            Booking.status != BookingStatus.cancelled
+        ).count()
+        
+        remaining = max_per_slot - booked
+        is_full = remaining <= 0
+        
+        return {
+            "booked": booked,
+            "remaining": remaining,
+            "is_full": is_full
+        }
+
     @staticmethod
     def create_booking(db: Session, data):
         # Basic overlap check (works in any DB; Postgres constraint is still recommended)

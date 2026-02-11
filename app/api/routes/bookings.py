@@ -25,3 +25,5 @@ def create_booking(payload: BookingCreate, db: Session = Depends(get_db)):
     WhatsAppService.send_new_booking(booking)
 
     return booking
+
+
