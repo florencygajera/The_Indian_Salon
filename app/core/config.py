@@ -25,6 +25,11 @@ class Settings(BaseSettings):
     TWILIO_AUTH_TOKEN: str = ""
     TWILIO_WHATSAPP_FROM: str = "whatsapp:+14155238886"
 
+    IG_USER_ID: str = ""
+    IG_ACCESS_TOKEN: str = ""
+    IG_SYNC_LIMIT: int = 12
+
+
     class Config:
         env_file = ".env"
 

@@ -5,9 +5,15 @@ from app.core.config import settings
 from app.core.scheduler import start_scheduler
 
 app = FastAPI(title=settings.PROJECT_NAME)
+
+@app.get("/")
+def root():
+    return {"message": "The Indian Salon Backend Running 🚀"}
+
 app.include_router(api_router, prefix="/api")
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
 @app.on_event("startup")
 def _startup():
     start_scheduler()
