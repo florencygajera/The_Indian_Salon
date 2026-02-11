@@ -41,7 +41,7 @@ def gallery(request: Request):
 @router.get("/booking", response_class=HTMLResponse)
 def booking(request: Request):
     return templates.TemplateResponse("booking.html", {"request": request, "salon": SALON, "active": "booking"})
-
+0
 
 @router.get("/contact", response_class=HTMLResponse)
 def contact(request: Request):
