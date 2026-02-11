@@ -11,6 +11,7 @@ class BookingStatus(str, enum.Enum):
 
 class Booking(Base):
     __tablename__ = "bookings"
+
     id = Column(Integer, primary_key=True)
 
     customer_name = Column(String(120), nullable=False)
@@ -18,7 +19,9 @@ class Booking(Base):
     customer_email = Column(String(180), nullable=True)
 
     service_id = Column(Integer, ForeignKey("services.id"), nullable=False)
-    staff_id = Column(Integer, ForeignKey("staff.id"), nullable=True)
+
+    # temporarily remove staff until you implement it
+    staff_id = Column(Integer, nullable=True)
 
     starts_at = Column(DateTime(timezone=True), nullable=False, index=True)
     ends_at   = Column(DateTime(timezone=True), nullable=False, index=True)
@@ -29,4 +32,3 @@ class Booking(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     service = relationship("Service")
-    staff = relationship("Staff")

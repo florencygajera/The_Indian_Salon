@@ -4,11 +4,5 @@ from app.models.service import Service
 def list_services(db: Session, active_only: bool = True):
     q = db.query(Service)
     if active_only:
-        q = q.filter(Service.is_active == True)
-    return q.order_by(Service.category, Service.name).all()
-
-def create_service(db: Session, obj: Service):
-    db.add(obj)
-    db.commit()
-    db.refresh(obj)
-    return obj
+        q = q.filter(Service.active == True)
+    return q.order_by(Service.category.asc(), Service.name.asc()).all()

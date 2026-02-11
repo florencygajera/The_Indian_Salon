@@ -1,33 +1,18 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
+
+class SlotOut(BaseModel):
+    starts_at: datetime
+    ends_at: datetime
+    remaining_capacity: int
+    is_full: bool
 
 class BookingCreate(BaseModel):
     customer_name: str
     customer_phone: str
-    customer_email: Optional[EmailStr] = None
+    customer_email: str | None = None
     service_id: int
-    staff_id: Optional[int] = None
+    staff_id: int | None = None
     starts_at: datetime
     ends_at: datetime
-    notes: Optional[str] = None
-
-class BookingOut(BaseModel):
-    id: int
-    customer_name: str
-    customer_phone: str
-    customer_email: Optional[str] = None
-    service_id: int
-    staff_id: Optional[int] = None
-    starts_at: datetime
-    ends_at: datetime
-    status: str
-    notes: Optional[str] = None
-
-    class Config:
-        from_attributes = True
-
-class SlotQuery(BaseModel):
-    date: str  # "YYYY-MM-DD"
-    service_id: int
-    staff_id: Optional[int] = None
+    notes: str | None = None

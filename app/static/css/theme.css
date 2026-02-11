@@ -627,11 +627,10 @@ display: flex;
     background: rgba(239, 68, 68, .10)
 }
 .slot--full {
-    opacity: .45;
+    opacity: .55;
     cursor: not-allowed;
     text-decoration: line-through;
 }
-
 .slot:disabled {
     cursor: not-allowed;
 }

@@ -3,43 +3,42 @@
 
 {% block content %}
 <div class="hero-mini">
-    <div class="kicker">Booking</div>
-    <h2 class="h2">Book an Appointment</h2>
-    <p class="p">Select service → choose date → pick a slot → confirm.</p>
+<div class="kicker">Booking</div>
+<h2 class="h2">Book an Appointment</h2>
+<p class="p">Select service → choose date → pick a slot → confirm.</p>
 </div>
 
 <div class="split">
-    <!-- Form -->
+<!-- Form -->
 <div class="card">
     <h3>Your Details</h3>
 
     <div class="form-grid">
-        <div>
-            <label class="lbl">Full Name</label>
-            <input class="inp" id="name" placeholder="Enter your name" />
-        </div>
+    <div>
+        <label class="lbl">Full Name</label>
+        <input class="inp" id="name" placeholder="Enter your name" />
+    </div>
+
     <div>
         <label class="lbl">Phone</label>
         <input class="inp" id="phone" placeholder="e.g. 9876543210" />
     </div>
+
     <div>
         <label class="lbl">Email (optional)</label>
         <input class="inp" id="email" placeholder="you@gmail.com" />
     </div>
     
     <div>
-<label class="lbl">Service</label>
-<div class="selectWrap">
-    <select class="inp select" id="service">
-        <option value="">Skin Services</option>
-        <option value="">Hair Treatment</option>
-        <option value="">Bridal Makeup</option>
-    </select>
-    <span class="selectArrow">▾</span>
-</div>
-</div>
+        <label class="lbl">Service</label>
+        <div class="selectWrap">
+            <select class="inp select" id="service">
+            <option value="">Loading services...</option>
+            </select>
+            <span class="selectArrow">▾</span>
+            </div>
+            </div>
 
-    
     <div>
         <label class="lbl">Date</label>
         <input class="inp" id="date" type="date" />
@@ -50,49 +49,49 @@
         <input class="inp" id="notes" placeholder="Any preference..." />
     </div>
     </div>
-    
+
     <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap">
-        <button class="btn btn--primary" id="loadSlotsBtn" type="button">Load Slots</button>
-        <button class="btn btn--outline" id="clearBtn" type="button">Clear</button>
+    <button class="btn btn--primary" id="loadSlotsBtn" type="button">Load Slots</button>
+    <button class="btn btn--outline" id="clearBtn" type="button">Clear</button>
     </div>
-    
+
     <div id="msg" class="msg" style="display:none"></div>
-    </div>
-    
-    <div class="card" id="slotsCard" style="display:none;">
-        <h3>Available Slots</h3>
-        <p class="p" style="margin-top:6px">Tap a slot to select it.</p>
-    
-        <div id="slots" class="slots"></div>
-    
-        <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap">
-            <button class="btn btn--dark" id="confirmBtn" type="button" disabled>Confirm Booking</button>
-            <a class="btn btn--outline" target="_blank"
-                href="https://wa.me/{{ salon.phone | replace('+','') | replace(' ','') }}">WhatsApp</a>
-        </div>
-    </div>
+</div>
 
+<!-- Slots -->
+<div class="card" id="slotsCard" style="display:none;">
+    <h3>Available Slots</h3>
+    <p class="p" style="margin-top:6px">Tap a slot to select it.</p>
 
-    
-    <div class="section">
-        <div class="card">
-            <h3>Need help?</h3>
-            <p class="p">Call us at <b>{{ salon.phone }}</b> or WhatsApp for quick booking.</p>
-        </div>
+    <div id="slots" class="slots"></div>
+
+    <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap">
+        <button class="btn btn--dark" id="confirmBtn" type="button" disabled>Confirm Booking</button>
+        <a class="btn btn--outline" target="_blank"
+            href="https://wa.me/{{ salon.phone | replace('+','') | replace(' ','') }}">WhatsApp</a>
     </div>
-    
-    <script>
-        const el = (id) => document.getElementById(id);
-                                    const slotsCard = el("slotsCard");
-                                    let slotPoll = null;
-                                    let lastSlotQuery = null; // {date, serviceId}
+</div>
+</div>
+
+<div class="section">
+    <div class="card">
+        <h3>Need help?</h3>
+        <p class="p">Call us at <b>{{ salon.phone }}</b> or WhatsApp for quick booking.</p>
+    </div>
+</div>
+
+<script>
+    const el = (id) => document.getElementById(id);
 
         const msgBox = el("msg");
         const slotsWrap = el("slots");
         const confirmBtn = el("confirmBtn");
+                    const slotsCard = el("slotsCard");
 
-        let selectedSlot = null; // {starts_at, ends_at}
-        let servicesCache = [];
+                    let selectedSlotKey = null; // `${starts_at}|${ends_at}`
+                    let selectedSlotObj = null; // slot object
+                    let slotPoll = null;
+                    let lastSlotQuery = null;   // { date, serviceId }
 
         function showMsg(text, type = "info") {
             msgBox.style.display = "block";
@@ -105,6 +104,11 @@
             msgBox.textContent = "";
         }
 
+                    function stopPolling() {
+                        if (slotPoll) clearInterval(slotPoll);
+                        slotPoll = null;
+                    }
+
         function setTodayDefault() {
             const d = new Date();
             const yyyy = d.getFullYear();
@@ -115,13 +119,20 @@
         }
 
         async function loadServices() {
+            try {
             const r = await fetch("/api/services");
             const data = await r.json();
-            servicesCache = Array.isArray(data) ? data : [];
+                const services = Array.isArray(data) ? data : [];
 
             const s = el("service");
             s.innerHTML = "";
-            if (!servicesCache.length) {
+
+                const opt0 = document.createElement("option");
+                opt0.value = "";
+                opt0.textContent = "Select a service";
+                s.appendChild(opt0);
+
+                if (!services.length) {
                 const opt = document.createElement("option");
                 opt.value = "";
                 opt.textContent = "No services found (add via API/admin)";
@@ -129,113 +140,143 @@
                 return;
             }
 
-            const opt0 = document.createElement("option");
-            opt0.value = "";
-            opt0.textContent = "Select a service";
-            s.appendChild(opt0);
-
-            servicesCache.forEach((x) => {
+                services.forEach((x) => {
                 const opt = document.createElement("option");
                 opt.value = x.id;
                 opt.textContent = `${x.category} • ${x.name} (${x.duration_minutes} min)`;
                 s.appendChild(opt);
             });
+                                            } catch (e) {
+                                                showMsg("Failed to load services. Check /api/services.", "err");
+                                            }
+                                        }
+
+                                        function slotKey(s) {
+                                            return `${s.starts_at}|${s.ends_at}`;
         }
 
-        function renderSlots(slots) {
-            selectedSlot = null;
-            confirmBtn.disabled = true;
+                    function renderSlots(slots) {
             slotsWrap.innerHTML = "";
 
             if (!slots || !slots.length) {
+                selectedSlotKey = null;
+                selectedSlotObj = null;
+                confirmBtn.disabled = true;
                 slotsWrap.innerHTML = `<div class="muted">No slots available for selected date/service.</div>`;
                 return;
             }
+
+                    let stillSelected = false;
 
             slots.forEach((s) => {
                 const btn = document.createElement("button");
                 btn.type = "button";
 
       const startTxt = new Date(s.starts_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-      const endTxt = new Date(s.ends_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+                const endTxt = new Date(s.ends_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
       const remaining = (s.remaining_capacity ?? null);
       const label = remaining === null ? "" : ` • ${remaining} left`;
 
-      btn.className = "slot" + (s.is_full ? " slot--full" : "");
+                const k = slotKey(s);
+                const isFull = !!s.is_full;
+
+                btn.className = "slot" + (isFull ? " slot--full" : "");
+
+                // keep active selection after refresh
+                if (selectedSlotKey && k === selectedSlotKey && !isFull) {
+                    btn.classList.add("slot--active");
+                    stillSelected = true;
+                }
+
       btn.textContent = `${startTxt} - ${endTxt}${label}`;
 
-      if (s.is_full) {
-          btn.disabled = true;
-          return slotsWrap.appendChild(btn);
+                if (isFull) {
+                    btn.disabled = true;
+                    slotsWrap.appendChild(btn);
+                    return;
       }
 
       btn.addEventListener("click", () => {
           document.querySelectorAll(".slot").forEach(x => x.classList.remove("slot--active"));
           btn.classList.add("slot--active");
-          selectedSlot = s;
+          selectedSlotKey = k;
+          selectedSlotObj = s;
           confirmBtn.disabled = false;
           clearMsg();
       });
 
       slotsWrap.appendChild(btn);
-  });
-        }
+            });
 
-
-        async function loadSlots() {
-            clearMsg();
-            const serviceId = el("service").value;
-            const date = el("date").value;
-            slotsCard.style.display = "block"; // show the slots section after clicking Load Slots
-
-            if (!serviceId) return showMsg("Please select a service.", "warn");
-            if (!date) return showMsg("Please select a date.", "warn");
-
-            showMsg("Loading slots...", "info");
-            selectedSlot = null;
-            confirmBtn.disabled = true;
-
-            const url = `/api/bookings/slots?date=${encodeURIComponent(date)}&service_id=${encodeURIComponent(serviceId)}`;
-            const r = await fetch(url);
-            const data = await r.json();
-
-            // Start polling for real-time updates (every 8 sec)
-            lastSlotQuery = { date, serviceId };
-            if (slotPoll) clearInterval(slotPoll);
-            slotPoll = setInterval(() => {
-                if (lastSlotQuery) refreshSlots();
-            }, 8000);
-            
-
-            clearMsg();
-            renderSlots(data);
-        }
-                async function refreshSlots() {
-                    const { date, serviceId } = lastSlotQuery || {};
-                    if (!date || !serviceId) return;
-
-                    const url = `/api/bookings/slots?date=${encodeURIComponent(date)}&service_id=${encodeURIComponent(serviceId)}`;
-                    const r = await fetch(url);
-                    const data = await r.json();
-
-                    // if selected slot became full, unselect it
-                    if (selectedSlot && Array.isArray(data)) {
-                        const stillThere = data.find(x => x.starts_at === selectedSlot.starts_at && x.ends_at === selectedSlot.ends_at);
-                        if (!stillThere || stillThere.is_full) {
-                            selectedSlot = null;
-                            confirmBtn.disabled = true;
-                            document.querySelectorAll(".slot").forEach(x => x.classList.remove("slot--active"));
-                            showMsg("Slot became unavailable. Please pick another slot.", "warn");
-                        }
+                    // if previously selected slot became full/disappeared
+                    if (selectedSlotKey && !stillSelected) {
+                        selectedSlotKey = null;
+                        selectedSlotObj = null;
+                        confirmBtn.disabled = true;
+                        showMsg("Slot became unavailable. Please pick another slot.", "warn");
+                    } else if (stillSelected) {
+                        confirmBtn.disabled = false;
+                    } else {
+                        confirmBtn.disabled = true;
                     }
+        }
 
-                    renderSlots(data);
-                }
+                    async function refreshSlots() {
+                        if (!lastSlotQuery?.date || !lastSlotQuery?.serviceId) return;
 
+                                        const url = `/api/bookings/slots?date=${encodeURIComponent(lastSlotQuery.date)}&service_id=${encodeURIComponent(lastSlotQuery.serviceId)}`;
+                                        const r = await fetch(url);
+                                        const data = await r.json();
+                                        renderSlots(data);
+                                    }
+                                    async function loadServices() {
+                                        try {
+                                            const r = await fetch("/api/services");
+                                            const data = await r.json();
+                                            servicesCache = Array.isArray(data) ? data : [];
 
+                                    const s = el("service");
+                                    s.innerHTML = "";
+
+                                    const opt0 = document.createElement("option");
+                                    opt0.value = "";
+                                    opt0.textContent = "Select a service";
+                                    s.appendChild(opt0);
+
+                                    if (!servicesCache.length) return;
+
+                                    // group by category
+                                    const groups = {};
+                                    servicesCache.forEach(x => {
+                                        const cat = (x.category || "Other").trim();
+                                        if (!groups[cat]) groups[cat] = [];
+                                        groups[cat].push(x);
+                                    });
+
+                                    // render category optgroups
+                                    Object.keys(groups).sort().forEach(cat => {
+                                        const og = document.createElement("optgroup");
+                                        og.label = cat;
+
+                                groups[cat]
+                                    .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
+                                    .forEach(x => {
+                                        const opt = document.createElement("option");
+                                        opt.value = x.id;
+                                        opt.textContent = `${x.name} (${x.duration_minutes} min)`;
+                                        og.appendChild(opt);
+                                    });
+
+                                s.appendChild(og);
+                            });
+                                } catch (e) {
+                                    showMsg("Failed to load services. Check /api/services.", "err");
+                                }
+                            }
         async function confirmBooking() {
             clearMsg();
+
             const name = el("name").value.trim();
             const phone = el("phone").value.trim();
             const email = el("email").value.trim();
@@ -245,7 +286,7 @@
             if (!name) return showMsg("Please enter your name.", "warn");
             if (!phone) return showMsg("Please enter your phone number.", "warn");
             if (!serviceId) return showMsg("Please select a service.", "warn");
-            if (!selectedSlot) return showMsg("Please select a slot.", "warn");
+            if (!selectedSlotObj) return showMsg("Please select a slot.", "warn");
 
             const payload = {
                 customer_name: name,
@@ -253,8 +294,8 @@
                 customer_email: email ? email : null,
                 service_id: Number(serviceId),
                 staff_id: null,
-                starts_at: selectedSlot.starts_at,
-                ends_at: selectedSlot.ends_at,
+                starts_at: selectedSlotObj.starts_at,
+                ends_at: selectedSlotObj.ends_at,
                 notes: notes ? notes : null
             };
 
@@ -270,14 +311,20 @@
 
             if (!r.ok) {
                 const detail = data?.detail || "Booking failed.";
-                return showMsg(detail, "err");
+                showMsg(detail, "err");
+                await refreshSlots(); // update full counts instantly
+                return;
             }
 
             showMsg("✅ Booking received! We will confirm shortly.", "ok");
-            confirmBtn.disabled = true;
 
-            // optional: clear selection
+            // clear selection + refresh
+            selectedSlotKey = null;
+            selectedSlotObj = null;
+            confirmBtn.disabled = true;
             document.querySelectorAll(".slot").forEach(x => x.classList.remove("slot--active"));
+
+            await refreshSlots();
         }
 
         function clearAll() {
@@ -286,11 +333,18 @@
             el("email").value = "";
             el("notes").value = "";
             el("service").value = "";
+
             slotsWrap.innerHTML = "";
-            selectedSlot = null;
+            slotsCard.style.display = "none";
+
+            selectedSlotKey = null;
+            selectedSlotObj = null;
             confirmBtn.disabled = true;
+
             clearMsg();
             setTodayDefault();
+            stopPolling();
+            lastSlotQuery = null;
         }
 
         el("loadSlotsBtn").addEventListener("click", loadSlots);
@@ -299,14 +353,6 @@
 
         // init
         setTodayDefault();
-        loadServices();
-
-    el("service").addEventListener("change", () => {
-        if (el("service").value && el("date").value) loadSlots();
-    });
-    el("date").addEventListener("change", () => {
-        if (el("service").value && el("date").value) loadSlots();
-    });
-
-    </script>
+                    loadServices();
+</script>
 {% endblock %}

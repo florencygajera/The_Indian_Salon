@@ -6,5 +6,5 @@ class Staff(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(120), nullable=False)
-    role = Column(String(80), nullable=True)   # Stylist, Beautician, etc.
-    is_active = Column(Boolean, default=True)
+    role = Column(String(80), nullable=True)
+    active = Column(Boolean, default=True)
