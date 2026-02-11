@@ -33,7 +33,6 @@ def services(request: Request):
         {"request": request, "salon": SALON, "active": "services"}
     )
 
-
 @router.get("/gallery", response_class=HTMLResponse)
 def gallery(request: Request):
     return templates.TemplateResponse("gallery.html", {"request": request, "salon": SALON})
